@@ -1,0 +1,16 @@
+PODS:
+  - Cartography (4.0.0)
+
+DEPENDENCIES:
+  - Cartography
+
+SPEC REPOS:
+  trunk:
+    - Cartography
+
+SPEC CHECKSUMS:
+  Cartography: c5626d29056b20f1e95c017326ee4df57cc39ad8
+
+PODFILE CHECKSUM: e1dde0586fabe509fe2161ee9bfd340effd6561b
+
+COCOAPODS: 1.8.4

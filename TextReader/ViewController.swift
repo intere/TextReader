@@ -6,15 +6,19 @@
 //  Copyright © 2020 Eric Internicola. All rights reserved.
 //
 
+import Cartography
 import UIKit
 import Vision
 import VisionKit
 
 class ViewController: UIViewController {
     
-    @IBOutlet weak var textView: UITextView!
-    @IBOutlet weak var scanButton: UIButton!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    let textView = UITextView(withText: "Click the scan button to take a photo and read the text from that photo.  The text will appear here.")
+    let scanButton = UIButton(withText: "Scan")
+    let addPhotoButton = UIButton(withText: "Photo")
+    let copyButton = UIButton(withText: "Copy")
+    let activityIndicator = UIActivityIndicatorView(style: .large)
+    
     private var resultingText = ""
     
     private var requests = [VNRequest]()
@@ -28,6 +32,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         setupVision()
         activityIndicator.hidesWhenStopped = true
+        buildView()
     }
 
     @IBAction
@@ -38,6 +43,17 @@ class ViewController: UIViewController {
         let documentCameraViewController = VNDocumentCameraViewController()
         documentCameraViewController.delegate = self
         present(documentCameraViewController, animated: true)
+    }
+    
+    @IBAction
+    func tappedPhoto(_ source: Any) {
+        
+    }
+    
+    @IBAction
+    func tappedCopy(_ source: Any) {
+        let pasteboard = UIPasteboard.general
+        pasteboard.string = textView.text
     }
 }
 
@@ -75,6 +91,19 @@ extension ViewController: VNDocumentCameraViewControllerDelegate {
     }
 }
 
+// MARK: - UITextViewDelegate
+
+extension ViewController: UITextViewDelegate {
+    
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        if text == "\n" {
+            textView.resignFirstResponder()
+        }
+        return true
+    }
+    
+}
+
 // MARK: - Implementation
 
 private extension ViewController {
@@ -100,6 +129,54 @@ private extension ViewController {
         // specify the recognition level
         textRecognitionRequest.recognitionLevel = .accurate
         self.requests = [textRecognitionRequest]
+    }
+    
+    func buildView() {
+        [textView, scanButton, addPhotoButton, copyButton, activityIndicator].forEach { view.addSubview($0) }
+        [scanButton, addPhotoButton, copyButton].forEach { $0.setTitleColor(.blue, for: .normal) }
+        
+        scanButton.addTarget(self, action: #selector(tappedScan(_:)), for: .touchUpInside)
+        addPhotoButton.addTarget(self, action: #selector(tappedPhoto(_:)), for: .touchUpInside)
+        copyButton.addTarget(self, action: #selector(tappedCopy(_:)), for: .touchUpInside)
+        
+        constrain(view, textView, scanButton, addPhotoButton, copyButton, activityIndicator) { view, textView, scanButton, addPhotoButton, copyButton,  activityIndicator in
+            textView.top == view.safeAreaLayoutGuide.top
+            textView.left == view.left + 16
+            textView.right == view.right - 16
+            textView.bottom == copyButton.top - 16
+            
+            activityIndicator.centerX == view.centerX
+            activityIndicator.centerY == view.centerY
+            
+            copyButton.centerX == view.centerX
+            copyButton.bottom == addPhotoButton.top - 16
+            
+            addPhotoButton.centerX == view.centerX
+            addPhotoButton.bottom == scanButton.top - 16
+            
+            scanButton.centerX == view.centerX
+            scanButton.bottom == view.safeAreaLayoutGuide.bottom - 16
+        }
+        
+        textView.delegate = self
+    }
+}
+
+
+extension UITextView {
+    
+    convenience init(withText text: String) {
+        self.init(frame: .zero)
+        self.text = text
+    }
+    
+}
+
+extension UIButton {
+    
+    convenience init(withText text: String) {
+        self.init(type: .custom)
+        setTitle(text, for: .normal)
     }
     
 }
