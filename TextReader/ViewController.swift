@@ -7,6 +7,8 @@
 //
 
 import Cartography
+import Photos
+import PhotosUI
 import UIKit
 import Vision
 import VisionKit
@@ -18,6 +20,8 @@ class ViewController: UIViewController {
     let addPhotoButton = UIButton(withText: "Photo")
     let copyButton = UIButton(withText: "Copy")
     let activityIndicator = UIActivityIndicatorView(style: .large)
+    
+    let imagePicker = UIImagePickerController()
     
     private var resultingText = ""
     
@@ -32,6 +36,11 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         setupVision()
         activityIndicator.hidesWhenStopped = true
+        
+        imagePicker.delegate = self
+        imagePicker.allowsEditing = false
+        imagePicker.sourceType = .photoLibrary
+        
         buildView()
     }
 
@@ -47,7 +56,7 @@ class ViewController: UIViewController {
     
     @IBAction
     func tappedPhoto(_ source: Any) {
-        
+        selectPhotoFromGallery()
     }
     
     @IBAction
@@ -61,34 +70,44 @@ class ViewController: UIViewController {
 
 extension ViewController: VNDocumentCameraViewControllerDelegate {
 
-    func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {
-        // Clear any existing text.
-        resultingText = ""
-        // dismiss the document camera
+    func documentCameraViewController(_ controller: VNDocumentCameraViewController, didFinishWith scan: VNDocumentCameraScan) {        
         controller.dismiss(animated: true)
-
-        activityIndicator.isHidden = false
-        activityIndicator.startAnimating()
-
-        textRecognitionWorkQueue.async {
-            self.resultingText = ""
-            for pageIndex in 0 ..< scan.pageCount {
-                let image = scan.imageOfPage(at: pageIndex)
-                if let cgImage = image.cgImage {
-                    let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
-                    do {
-                        try requestHandler.perform(self.requests)
-                    } catch {
-                        print("failed to recognize text: \(error.localizedDescription)")
-                    }
-                }
-            }
-            DispatchQueue.main.async { [weak self] in
-                self?.activityIndicator.stopAnimating()
-                self?.handleTextRecognition()
-            }
+        
+        var images = [UIImage]()
+        for pageIndex in 0..<scan.pageCount {
+            images.append(scan.imageOfPage(at: pageIndex))
         }
+        
+        readText(from: images)
     }
+}
+
+// MARK: - UIImagePickerControllerDelegate
+
+extension ViewController: UIImagePickerControllerDelegate {
+
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        defer {
+            dismiss(animated: true, completion: nil)
+        }
+        
+        guard let pickedImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage else {
+            return assertionFailure("no image came back")
+        }
+        
+        readText(from: [pickedImage])
+    }
+
+
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController){
+        print("cancel is clicked")
+    }
+}
+
+// MARK: - UINavigationControllerDelegate
+
+extension ViewController: UINavigationControllerDelegate {
+    
 }
 
 // MARK: - UITextViewDelegate
@@ -107,6 +126,63 @@ extension ViewController: UITextViewDelegate {
 // MARK: - Implementation
 
 private extension ViewController {
+
+    func selectPhotoFromGallery() {
+        present(imagePicker, animated: true, completion: nil)
+    }
+
+    func checkPermission() {
+        let photoAuthorizationStatus = PHPhotoLibrary.authorizationStatus()
+        switch photoAuthorizationStatus {
+        case .authorized:
+            print("Access is granted by user")
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization({
+                (newStatus) in
+                print("status is \(newStatus)")
+                if newStatus ==  PHAuthorizationStatus.authorized {
+                    /* do stuff here */
+                    print("success")
+                }
+            })
+            print("It is not determined until now")
+        case .restricted:
+            // same same
+            print("User do not have access to photo album.")
+        case .denied:
+            // same same
+            print("User has denied the permission.")
+        @unknown default:
+            fatalError()
+        }
+    }
+    
+    func readText(from images: [UIImage]) {
+        // Clear any existing text.
+        resultingText = ""
+
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+
+        textRecognitionWorkQueue.async {
+            images.forEach { image in
+                guard let cgImage = image.cgImage else {
+                    return
+                }
+                do {
+                    let requestHandler = VNImageRequestHandler(cgImage: cgImage, options: [:])
+                    try requestHandler.perform(self.requests)
+                } catch {
+                    print("failed to recognize text: \(error.localizedDescription)")
+                }
+            }
+            
+            DispatchQueue.main.async { [weak self] in
+                self?.activityIndicator.stopAnimating()
+                self?.handleTextRecognition()
+            }
+        }
+    }
     
     func handleTextRecognition() {
         textView.text = resultingText
