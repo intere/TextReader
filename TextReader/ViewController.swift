@@ -63,6 +63,7 @@ class ViewController: UIViewController {
     func tappedCopy(_ source: Any) {
         let pasteboard = UIPasteboard.general
         pasteboard.string = textView.text
+        view.toast(in: self.view, withMessage: "Copied to clipboard! ✅")
     }
 }
 
@@ -213,6 +214,7 @@ private extension ViewController {
         scanButton.addTarget(self, action: #selector(tappedScan(_:)), for: .touchUpInside)
         addPhotoButton.addTarget(self, action: #selector(tappedPhoto(_:)), for: .touchUpInside)
         copyButton.addTarget(self, action: #selector(tappedCopy(_:)), for: .touchUpInside)
+        textView.returnKeyType = .done
         
         constrain(view, textView, scanButton, addPhotoButton, copyButton, activityIndicator) { view, textView, scanButton, addPhotoButton, copyButton,  activityIndicator in
             textView.top == view.safeAreaLayoutGuide.top + 16
@@ -244,7 +246,7 @@ private extension ViewController {
 
 extension UITextView {
     
-    convenience init(withText text: String, fontSize: CGFloat = 24) {
+    convenience init(withText text: String = "", fontSize: CGFloat = 24) {
         self.init(frame: .zero)
         self.text = text
         font = .systemFont(ofSize: fontSize)
