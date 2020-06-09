@@ -15,7 +15,19 @@ import VisionKit
 
 class ViewController: UIViewController {
     
-    let textView = UITextView(withText: "Click the scan button to take a photo and read the text from that photo.  The text will appear here.")
+    static var lastText: String {
+        get {
+            guard let text = UserDefaults.standard.value(forKey: "lastText") as? String else {
+                return "Click the scan button to take a photo and read the text from that photo.  The text will appear here."
+            }
+            return text
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: "lastText")
+        }
+    }
+    
+    let textView = UITextView(withText: ViewController.lastText)
     let scanButton = UIButton(withText: "Scan Text")
     let addPhotoButton = UIButton(withText: "Text from Photo")
     let copyButton = UIButton(withText: "Copy Text")
@@ -187,6 +199,7 @@ private extension ViewController {
     
     func handleTextRecognition() {
         textView.text = resultingText
+        ViewController.lastText = resultingText
     }
     
     // Setup Vision request as the request can be reused
