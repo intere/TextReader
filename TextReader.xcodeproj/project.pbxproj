@@ -16,6 +16,7 @@
 		3646588A24798DBB0048B9A0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3646588824798DBB0048B9A0 /* LaunchScreen.storyboard */; };
 		3646589524798DBB0048B9A0 /* TextReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3646589424798DBB0048B9A0 /* TextReaderTests.swift */; };
 		36473F4A248CA77200C965AD /* UIViewExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36473F49248CA77200C965AD /* UIViewExtensions.swift */; };
+		36928957249014C7009A110B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 36928956249014C7009A110B /* GoogleService-Info.plist */; };
 		D97B9FA0221C84DD981423DB /* Pods_TextReader.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A7394414AF112DB239E7BCE3 /* Pods_TextReader.framework */; };
 /* End PBXBuildFile section */
 
@@ -44,6 +45,7 @@
 		3646589424798DBB0048B9A0 /* TextReaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextReaderTests.swift; sourceTree = "<group>"; };
 		3646589624798DBB0048B9A0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		36473F49248CA77200C965AD /* UIViewExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIViewExtensions.swift; sourceTree = "<group>"; };
+		36928956249014C7009A110B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5A7EC769ECEAFB85E00E6E71 /* Pods-TextReader.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TextReader.debug.xcconfig"; path = "Target Support Files/Pods-TextReader/Pods-TextReader.debug.xcconfig"; sourceTree = "<group>"; };
 		994B21AE10C6B2ED93C19AD8 /* Pods-TextReader.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TextReader.release.xcconfig"; path = "Target Support Files/Pods-TextReader/Pods-TextReader.release.xcconfig"; sourceTree = "<group>"; };
 		A7394414AF112DB239E7BCE3 /* Pods_TextReader.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TextReader.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -104,6 +106,7 @@
 		3646587C24798DA40048B9A0 /* TextReader */ = {
 			isa = PBXGroup;
 			children = (
+				36928956249014C7009A110B /* GoogleService-Info.plist */,
 				36473F48248CA76600C965AD /* Extensions */,
 				3646587D24798DA40048B9A0 /* AppDelegate.swift */,
 				3646587F24798DA40048B9A0 /* SceneDelegate.swift */,
@@ -227,6 +230,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3646588A24798DBB0048B9A0 /* LaunchScreen.storyboard in Resources */,
+				36928957249014C7009A110B /* GoogleService-Info.plist in Resources */,
 				3646588724798DBB0048B9A0 /* Assets.xcassets in Resources */,
 				3646588524798DA50048B9A0 /* Main.storyboard in Resources */,
 			);
